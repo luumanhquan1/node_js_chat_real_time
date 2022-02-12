@@ -10,8 +10,10 @@ var io = require("socket.io")(server);
 //middlewre
 app.use(express.json());
 var idUser = {};
+var messList={};
 io.use((socket, next) => {
   const token = socket.handshake.headers.token;
+  console.log(token);
   try {
     const data = decode(token);
     if (data.isSuccess) {
@@ -27,17 +29,18 @@ io.use((socket, next) => {
 
 });
 io.on("connection", (socket) => {
-  console.log("connetetd");
-  console.log(socket.id, "has joined");
- 
-  socket.on("message", (msg) => {
 
+  socket.on("message", (msg) => {
+console.log(socket.id);
     const { idNguoiNhan, mess } = msg;
-console.log(idNguoiNhan,mess);
-  io.to(idNguoiNhan).emit('getMess',mess);
+// console.log(idNguoiNhan,mess);
+    io.to(idNguoiNhan).emit('getMess', mess);
 
   });
-
+socket.on('disconnect',()=>{
+  console.log('>>>>>>>>>>disconnect');
+   socket.disconnect();
+})
 });
 
 server.listen(port, "0.0.0.0", () => {
